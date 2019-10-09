@@ -10,9 +10,9 @@
     <parameter name="url" value="https://www.amazon.com"/>
     <parameter name="platform" value="mac"/>
 
-    <test name="openBrowser">
+    <test name="Automation tests">
         <classes>
-            <class name="HomePage"/>
+            <class name="homepagetests.SearchTests"/>
         </classes>
     </test>
 </suite>
