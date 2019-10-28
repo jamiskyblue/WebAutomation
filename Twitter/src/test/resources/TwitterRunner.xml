@@ -12,7 +12,7 @@
 
     <test name="Automation tests">
         <classes>
-            <class name="homepagetests.LogInTest"/>
+            <class name="homepagetests.OpenBrowserTest"/>
         </classes>
     </test>
 </suite>
