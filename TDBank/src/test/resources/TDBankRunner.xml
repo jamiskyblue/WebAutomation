@@ -6,13 +6,15 @@
     <parameter name="cloud" value="false"/>
     <parameter name="envName" value="browserstack"/>
     <parameter name="browser" value="chrome"/>
-    <parameter name="browserVersion" value="53.0"/>
+    <parameter name="browserVersion" value="77.0"/>
     <parameter name="url" value="https://www.tdbank.com"/>
     <parameter name="platform" value="mac"/>
 
     <test name="Automation tests">
         <classes>
-            <class name=""/>
+            <class name="testpage.HomePOMTest"/>
+            <class name="testpage.ServicePOMTest"/>
+            <class name="testpage.SearchPOMTest"/>
         </classes>
     </test>
 </suite>

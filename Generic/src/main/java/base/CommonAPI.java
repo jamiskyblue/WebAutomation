@@ -10,6 +10,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
@@ -24,8 +26,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CommonAPI {
@@ -36,21 +40,9 @@ public class CommonAPI {
     public static String sauceKey = "";
     public static String browserStackUserName = "";
     public static String browserStackKey = "";
-    //http:// + username + : + key + specific url for cloud
     public static String SAUCE_URL = "http://" + sauceUserName + ":" + sauceKey + "@ondemand.saucelabs.com:80/wd/hub";
     public static String BROWERSTACK_URL = "http://" + browserStackUserName + ":" + browserStackKey + "@hub-cloud.browserstack.com:80/wd/hub";
 
-    /**
-     * @param platform       -
-     * @param url            -
-     * @param browser        -
-     * @param cloud          -
-     * @param browserVersion -
-     * @param envName        -
-     * @return
-     * @throws MalformedURLException
-     * @Parameters - values are coming from the runner.xml file of the project modules
-     */
     @Parameters({"platform", "url", "browser", "cloud", "browserVersion", "envName"})
     @BeforeMethod
     public static WebDriver setupDriver(String platform, String url, String browser,
@@ -64,11 +56,6 @@ public class CommonAPI {
         return driver;
     }
 
-    /**
-     * @param browser  the browser you want to execute your test case
-     * @param platform in the operating system you want to execute your test case
-     * @return WebDriver Object
-     */
     public static WebDriver getLocalDriver(String browser, String platform) {
         //chrome popup
         ChromeOptions chromeOptions = new ChromeOptions();
@@ -112,7 +99,6 @@ public class CommonAPI {
         return driver;
     }
 
-    //screenshot
     public static void captureScreenshot(WebDriver driver, String screenshotName) {
         DateFormat df = new SimpleDateFormat("(MM.dd.yyyy-HH:mma)");
         Date date = new Date();
@@ -126,7 +112,6 @@ public class CommonAPI {
         }
     }
 
-    //reporting starts
     @BeforeSuite
     public void extentSetup(ITestContext context) {
         ExtentManager.setOutputDirectory(context);
@@ -170,7 +155,7 @@ public class CommonAPI {
         }
     }
 
-    private Date getTime(long millis) {
+    private Date getTimeByMilliseconds(long millis) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(millis);
         return calendar.getTime();
@@ -180,8 +165,6 @@ public class CommonAPI {
     public void generateReport() {
         extent.close();
     }
-    //reporting finish
-
     @AfterMethod
     public void cleanUp() {
         driver.close();
@@ -195,9 +178,6 @@ public class CommonAPI {
             e.printStackTrace();
         }
     }
-
-    // commmon methods
-
     public void clickOnElementByXpath(String locator) {
         driver.findElement(By.xpath(locator)).click();
     }
@@ -238,10 +218,6 @@ public class CommonAPI {
         return flag;
     }
 
-    /**
-     * @param locator - xpath that we are trying to make webElement of
-     * @return WebElement - WebElement of the xpath
-     */
     public WebElement getElement(String locator) {
         return driver.findElement(By.xpath(locator));
     }
@@ -249,7 +225,6 @@ public class CommonAPI {
     public WebElement getElementByLinkText(String locator) {
         return driver.findElement(By.linkText(locator));
     }
-
 
     public void dragNdropByXpaths(String fromLocator, String toLocator) {
         Actions actions = new Actions(driver);
@@ -261,5 +236,60 @@ public class CommonAPI {
     public void scrollIntoView(String locator) {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", getElementByLinkText(locator));
+    }
+
+
+    public void waitExplicitlyByXpath(String locator, int seconds) {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, seconds);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(locator)));
+    }
+
+    public void waitUntilSelectable(String locator, int seconds) {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, seconds);
+        webDriverWait.until(ExpectedConditions.elementToBeSelected(getElement(locator)));
+    }
+
+    public void waitUntilClickable(String locator, int seconds) {
+        WebDriverWait webDriverWait = new WebDriverWait(driver, seconds);
+        webDriverWait.until(ExpectedConditions.elementToBeClickable(By.xpath(locator)));
+    }
+    
+    public String getAllLink() {
+        return driver.findElement(By.tagName("a")).getText();
+    }
+
+    public List<String> getAllLinks() {
+        List<WebElement> webElementsList = driver.findElements(By.tagName("a"));
+        List<String> stringList = new ArrayList<String>();
+        for (int i = 0; i < webElementsList.size(); i++) {
+            stringList.add(webElementsList.get(i).getText());
+        }
+        return stringList;
+    }
+
+    public void uploadFileByXpath(String path, String locator) {
+        driver.findElement(By.xpath(locator)).sendKeys(path);
+    }
+
+    public void clearFieldByXpath(String locator) {
+        driver.findElement(By.xpath(locator)).clear();
+    }
+
+    public void typeEnterByXpath(String locator) {
+        driver.findElement(By.xpath(locator)).sendKeys(Keys.ENTER);
+    }
+
+    public Date getTime(long millis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar.getTime();
+    }
+
+    public void navigateBack() {
+        driver.navigate().back();
+    }
+
+    public void navigateForward() {
+        driver.navigate().forward();
     }
 }
